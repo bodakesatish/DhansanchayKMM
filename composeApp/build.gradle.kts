@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.sqldelight)
     alias(libs.plugins.kotlinxSerialization)
 }
 
@@ -36,9 +37,11 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sqldelight.android.driver) // Android specific driver
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.ios.driver) // iOS specific driver
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -65,6 +68,10 @@ kotlin {
 
 //            implementation(libs.androidx.lifecycle.viewmodel)
 //            implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            // SQLDelight
+            implementation(libs.sqldelight.coroutines.extensions) // For Flow support (optional but recommended)
+
 
         }
         commonTest.dependencies {
@@ -102,5 +109,16 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+// Add this block for SQLDelight configuration
+sqldelight {
+    databases {
+        create("SchemeDatabase") { // This will be the generated database class name
+            packageName.set("com.bodakesatish.kmm.dhansanchay") // Package for generated database code
+            // You can specify source folders if your .sq files are not in the default location
+//             srcDirs.setFrom("src/main/db")
+        }
+    }
 }
 

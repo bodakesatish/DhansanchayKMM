@@ -10,16 +10,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.bodakesatish.kmm.dhansanchay.app.screens.detail.DetailScreen
 import kotlinx.serialization.Serializable
 import com.bodakesatish.kmm.dhansanchay.app.screens.list.ListScreen
-import org.koin.compose.KoinContext
 
 @Serializable
 object ListDestination
 
 @Serializable
-data class DetailDestination(val objectId: Int)
+data class DetailDestination(val schemeCode: Long, val schemeName: String)
 
 @Composable
 fun App() {
@@ -31,16 +31,21 @@ fun App() {
                 val navController: NavHostController = rememberNavController()
                 NavHost(navController = navController, startDestination = ListDestination) {
                     composable<ListDestination> {
-                        ListScreen(navigateToDetails = { objectId ->
-                            navController.navigate(DetailDestination(objectId))
+                        ListScreen(navigateToDetails = { objectId, scheme ->
+                            navController.navigate(DetailDestination(scheme.schemeCode, scheme.schemeName))
                         })
                     }
                     composable<DetailDestination> { backStackEntry ->
+                        val detailArgs = backStackEntry.toRoute<DetailDestination>()
                         DetailScreen(
-//                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
-//                        navigateBack = {
-//                            navController.popBackStack()
-//                        }
+//                            scheme = detailArgs.scheme,
+                            schemeCode = detailArgs.schemeCode,
+                            schemeName = detailArgs.schemeName,
+                            onNavigateUp = {
+                                navController.popBackStack()
+                            }
+                            //                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
+
                         )
                     }
                 }
