@@ -1,44 +1,76 @@
 package com.bodakesatish.kmm.dhansanchay
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.bodakesatish.kmm.dhansanchay.app.screens.detail.DetailScreen
+import kotlinx.serialization.Serializable
+import com.bodakesatish.kmm.dhansanchay.app.screens.list.ListScreen
+import org.koin.compose.KoinContext
 
-import dhansanchaykmm.composeapp.generated.resources.Res
-import dhansanchaykmm.composeapp.generated.resources.compose_multiplatform
+@Serializable
+object ListDestination
+
+@Serializable
+data class DetailDestination(val objectId: Int)
 
 @Composable
-@Preview
 fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+    MaterialTheme(
+        colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
+    ) {
+//        KoinContext {
+            Surface {
+                val navController: NavHostController = rememberNavController()
+                NavHost(navController = navController, startDestination = ListDestination) {
+                    composable<ListDestination> {
+                        ListScreen(navigateToDetails = { objectId ->
+                            navController.navigate(DetailDestination(objectId))
+                        })
+                    }
+                    composable<DetailDestination> { backStackEntry ->
+                        DetailScreen(
+//                        objectId = backStackEntry.toRoute<DetailDestination>().objectId,
+//                        navigateBack = {
+//                            navController.popBackStack()
+//                        }
+                        )
+                    }
                 }
             }
-        }
+//        }
     }
 }
+
+
+//@Composable
+//@Preview
+//fun App() {
+//    MaterialTheme {
+//        var showContent by remember { mutableStateOf(false) }
+//        Column(
+//            modifier = Modifier
+//                .safeContentPadding()
+//                .fillMaxSize(),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//        ) {
+//            Button(onClick = { showContent = !showContent }) {
+//                Text("Click me!")
+//            }
+//            AnimatedVisibility(showContent) {
+//                val greeting = remember { Greeting().greet() }
+//                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Image(painterResource(Res.drawable.compose_multiplatform), null)
+//                    Text("Compose: $greeting")
+//                }
+//            }
+//        }
+//    }
+//}
